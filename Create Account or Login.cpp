@@ -59,7 +59,6 @@ void create_account(User &user, char &choice)
         cin >> user.password;
     }while(!is_valid_password(user.password));
     cout << "Your account has been created successfully" << endl;
-    choice = 'c';
 }
 
 bool login(const User& user) {
@@ -86,19 +85,22 @@ bool login(const User& user) {
     return false;
 }
 
-
 int main()
 {
     User user;
     char choice;
     bool logged_in = false;
     cout << "Welcome RDJ program" << endl;
-    cout << "İf you dont have account please enter 'c' to create account or you have account please enter 'L' to login : " << endl;
-    cin >> choice;
-    if(choice == 'c' || choice == 'C') 
-        create_account(user, choice);
-    else if(choice == 'l' || choice == 'L') 
-        logged_in = login(user);
+    while(logged_in == false)
+    {
+        cout << "İf you dont have account please enter 'c' to create account or you have account please enter 'L' to login : " << endl;
+        cin >> choice;
+        if(choice == 'c' || choice == 'C') 
+            create_account(user, choice);
+        else if(choice == 'l' || choice == 'L') 
+            logged_in = login(user);
+    }
+
     if(logged_in == true)
         cout << "Welcome " << user.first_name << " " << user.last_name << endl;
     else if(choice == 'l' || choice == 'L' && logged_in == false)

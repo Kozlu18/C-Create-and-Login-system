@@ -40,7 +40,7 @@ bool is_valid_password(const string &password) {
     return has_letter && has_digit;
 }
 
-void create_account(User &user, char &choice)
+void create_account(User &user)
 {
     cout << "Please write your first name : ";
     cin >> user.first_name;
@@ -59,6 +59,34 @@ void create_account(User &user, char &choice)
         cin >> user.password;
     }while(!is_valid_password(user.password));
     cout << "Your account has been created successfully" << endl;
+}
+
+void change_personal_information(User &user)
+{
+    string new_first_name, new_last_name, new_user_name, new_password, old_password;
+    cout << "Please enter your new first_name : ";
+    cin >> new_first_name;
+    user.first_name = new_first_name;
+    cout << "Please enter your new last name : ";
+    cin >> new_last_name;
+    user.last_name = new_last_name;
+    cout << "Please enter new username : ";
+    cin >> new_user_name;
+    user.user_name = new_user_name;
+    cout << "Please old password : ";
+    cin >> old_password;
+    while(old_password != user.password)
+    {
+        cout << "Your old password is incorrect. Please try again : ";
+        cin >> old_password;
+    }
+    
+    do{
+        cout << "Please enter your new password : ";
+        cin >> new_password;
+    }while(!is_valid_password(new_password));
+    cout << "Your personal information has been changed successfully" << endl;
+    user.password = new_password;
 }
 
 bool login(const User& user) {
@@ -96,13 +124,24 @@ int main()
         cout << "İf you dont have account please enter 'c' to create account or you have account please enter 'L' to login : " << endl;
         cin >> choice;
         if(choice == 'c' || choice == 'C') 
-            create_account(user, choice);
+            create_account(user);
         else if(choice == 'l' || choice == 'L') 
             logged_in = login(user);
     }
 
-    if(logged_in == true)
-        cout << "Welcome " << user.first_name << " " << user.last_name << endl;
-    else if(choice == 'l' || choice == 'L' && logged_in == false)
+    if(choice == 'l' || choice == 'L' && logged_in == false)
         cout << "Login failed. Please try again later." << endl;
+    while(logged_in == true)
+    {
+        cout << "Welcome" << " " << user.first_name << " " << user.last_name << endl;
+        cout << "F : Change personel information" << endl;
+        cout << "T : Create text file" << endl;
+        cout << "W : Write your text file" << endl;
+        cout << "R : Read your text file" << endl;
+        cout << "Q : Quit the program" << endl;
+        char action;
+        cin >> action;
+        if(action == 'F' || action == 'f')
+            change_personal_information(user);
+    }
 }

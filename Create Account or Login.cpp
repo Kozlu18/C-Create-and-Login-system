@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cctype>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -86,6 +87,33 @@ void change_personal_information(User &user)
     user.password = new_password;
 }
 
+void show_information(User &user)
+{
+    cout << "Your first name and last name : " << user.first_name << " " << user.last_name << endl;
+    cout << "Your username : " << user.user_name << endl;
+    cout << "Your email : " << user.email << endl;
+    string s;
+    cout << "İf you see password enter your password : ";
+    cin >> s;
+    int check = 0;
+    while(user.password != s)
+    {
+        cout << "Your password is wrong please try again : ";
+        cin >> s;
+        check += 1;
+        if(check >= 3)
+        {
+            cout << "You wrong password writed 3 and most 3 attemps please wait 60 seconds...";
+            this_thread::sleep_for(chrono::seconds(60));
+            check = 0;
+            cout << "Please try again : ";
+            cin >> s;
+        }
+    }
+    cout << "Your password : " << user.password << endl;
+    this_thread::sleep_for(chrono::seconds(3));
+}
+
 void delete_information(User &user, bool &logged_in)
 {
     string st;
@@ -140,8 +168,9 @@ int main()
     User user;
     char choice;
     bool logged_in = false;
+    bool quit_p = true;
     cout << "Welcome RDJ program" << endl;
-    while(logged_in == false)
+    while(logged_in == false && quit_p == true)
     {
         cout << "İf you dont have account please enter 'C' to create account or you have account please enter 'L' to login : " << endl;
         cin >> choice;
@@ -151,10 +180,13 @@ int main()
             logged_in = login(user);
         if(logged_in == false)
             cout << "Login failed. Please try again." << endl;
-        while(logged_in == true)
+        if(logged_in == true)
+            quit_p = false;
+        while(logged_in == true && quit_p == false)
         {
-            cout << "Welcome" << " " << user.first_name << " " << user.last_name << endl;
+            cout << "Welcome" << " " << user.first_name << " " << user.last_name << " " << user.user_name << endl;
             cout << "F : Change personel information" << endl;
+            cout << "S : Show the personal information" << endl;
             cout << "T : Create text file" << endl;
             cout << "W : Write your text file" << endl;
             cout << "R : Read your text file" << endl;
@@ -164,20 +196,32 @@ int main()
             cin >> action;
             if(action == 'F' || action == 'f')
                 change_personal_information(user);
+            else if(action == 'S' || action == 's')
+                show_information(user);
             else if(action == 'T' || action == 't')
             {
                 ofstream myFile("user_data.txt");
-                cout << "Your text file created" << endl;
+                cout << "Your text file creating...";
+                this_thread::sleep_for(chrono::seconds(2));
+                cout << endl;
+                cout << "Your text file created." << endl;
+                this_thread::sleep_for(chrono::seconds(1));
             }
             else if(action == 'W' || action == 'w')
             {       
                 ofstream myFile("user_data.txt");
                 if (myFile.is_open())
                 {
-                    cout << "Please write your text any idea : ";
-                    string text;
-                    cin >> text;
-                    myFile << text << endl;
+                    cout << "How much word use : ";
+                    int w;
+                    cin >> w;
+                    for(int i = 0; i < w; i++)
+                    {
+                        vector<string> text(w, "");
+                        cout << "Write your idea : ";
+                        cin >> text[i];
+                        myFile << text[i] << " ";
+                    }
                     myFile.close();
                 }
             }
@@ -204,7 +248,9 @@ int main()
                 cout << "Thank you for using our program goodbye" << endl;
                 cout << "Exiting the program...";
                 this_thread::sleep_for(chrono::seconds(3));
+                quit_p = true;
                 logged_in = false;
+                cout << endl;
             }
             else{
                 cout << "You pressed wrong button please true button press" << endl;

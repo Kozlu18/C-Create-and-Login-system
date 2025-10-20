@@ -147,32 +147,8 @@ void show_information(User &user)
     cout << "Your password : " << user.password << endl;
     this_thread::sleep_for(chrono::seconds(3));
 }
-
-void delete_information(User &user, bool &logged_in)
-{
-    string st;
-    while(st != "DELETE")
-    {
-        cout << "Are you right delete your personal information please write 'DELETE' " << endl;
-        cin >> st;
-        if(st != "DELETE")
-            cout << "You wrong writed delete. Please try again" << endl;
-    }
-
-    if(st == "DELETE")
-    {
-        user.first_name = "";
-        user.last_name = "";
-        user.user_name = "";
-        user.password = "";
-        user.email = "";
-        cout << "Your personal information is deleting...";
-        this_thread::sleep_for(chrono::seconds(3));
-        cout << endl << "Your personal information is deleted." << endl;
-        logged_in = false;
-    }
-}
 */
+
 int main()
 {
     User user;
@@ -194,70 +170,59 @@ int main()
             quit_p = false;
         while(logged_in == true && quit_p == false)
         {
+            string filename = (username_file + "_data") + ".txt";
             cout << "Welcome" << " " << user.first_name << " " << user.last_name << " " << user.user_name << endl;
             //cout << "F : Change personel information" << endl;
             //cout << "S : Show the personal information" << endl;
             cout << "T : Create text file" << endl;
             cout << "W : Write your text file" << endl;
             cout << "R : Read your text file" << endl;
-            //cout << "D : Delete your personal information" << endl;
             cout << "Q : Quit the program" << endl;
+
             char action;
             cin >> action;
+            
             /*if(action == 'F' || action == 'f')
                 change_personal_information(user);
             else if(action == 'S' || action == 's')
                 show_information(user);
             */if(action == 'T' || action == 't')
             {
-                ofstream myFile("user_data.txt");
-                cout << "Your text file creating...";
-                this_thread::sleep_for(chrono::seconds(2));
-                cout << endl;
+                ofstream myFile(filename);
                 cout << "Your text file created." << endl;
-                this_thread::sleep_for(chrono::seconds(1));
             }
             else if(action == 'W' || action == 'w')
             {       
-                ofstream myFile("user_data.txt");
+                ofstream myFile(filename, ios::app);
                 if (myFile.is_open())
                 {
-                    cout << "How much word use : ";
-                    int w;
-                    cin >> w;
-                    for(int i = 0; i < w; i++)
-                    {
-                        vector<string> text(w, "");
-                        cout << "Write your idea : ";
-                        cin >> text[i];
-                        myFile << text[i] << " ";
-                    }
+                    cout << "Please enter the sentence : " << endl;
+                    string sentence;
+                    cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+                    getline(cin, sentence);
+                    myFile << sentence << endl;
                     myFile.close();
                 }
             }
             else if(action == 'R' || action == 'r')
             {
-                ifstream f("user_data.txt");
+                ifstream f(filename);
                 if(!f.is_open())
                 {
-                    cout << "File not found. Please create a file first." << endl;
+                    cerr << "Error : File is not found. Please create a file first." << endl;
                 }
                 string s;
                 while(getline(f, s))
                 {
                     cout << s << endl;
                 }
-                this_thread::sleep_for(chrono::seconds(2));
+                this_thread::sleep_for(chrono::seconds(1));
                 cout << "File reading completed." << endl;
                 f.close();
             }
-            //else if(action == 'D' || action == 'd')
-                //delete_information(user, logged_in);
             else if(action == 'Q' || action == 'q')
             {
                 cout << "Thank you for using our program goodbye" << endl;
-                cout << "Exiting the program...";
-                this_thread::sleep_for(chrono::seconds(3));
                 quit_p = true;
                 logged_in = false;
                 cout << endl;

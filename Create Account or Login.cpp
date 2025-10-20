@@ -38,6 +38,37 @@ bool is_valid_password(const string &password) {
     return has_letter && has_digit;
 }
 
+string name_file, lastname_file, mail_file, username_file, password_file;
+
+bool login(const User& user) {
+    string email_input, pass_input;
+    int attempts = 0;
+
+    while (attempts < 3) {
+        cout << "Please enter your email: ";
+        cin >> email_input;
+        cout << "Please enter your password: ";
+        cin >> pass_input;
+
+        ifstream users("users.txt");
+        while(users >> name_file >> lastname_file >> username_file >> mail_file >> password_file)
+        {
+            if(email_input == mail_file && pass_input == password_file)
+            {
+                cout << "You entered true information. Welcome : " << username_file << endl;
+                return true; 
+            }
+        }
+        
+        cout << "❌ Incorrect credentials. Try again.\n";
+        attempts++;
+    }
+
+    cout << "⏳ Too many failed attempts. Please wait 30 seconds.\n";
+    this_thread::sleep_for(chrono::seconds(30));
+    return false;
+}
+
 void create_account(User &user)
 {
     cout << "Please write your first name : ";
@@ -56,10 +87,13 @@ void create_account(User &user)
         cout << "Please write your password. Your passwrod must be last 8 characters and use letter : ";
         cin >> user.password;
     }while(!is_valid_password(user.password));
+    ofstream users("users.txt", ios::app);
+    users << user.first_name << " " << user.last_name << " " << user.user_name << " " << user.email << " " << user.password << endl;
+    users.close();
     cout << "Your account has been created successfully" << endl;
 }
 
-void change_personal_information(User &user)
+/*void change_personal_information(User &user)
 {
     string new_first_name, new_last_name, new_user_name, new_password, old_password;
     cout << "Please enter your new first_name : ";
@@ -138,31 +172,7 @@ void delete_information(User &user, bool &logged_in)
         logged_in = false;
     }
 }
-
-bool login(const User& user) {
-    string email_input, pass_input;
-    int attempts = 0;
-
-    while (attempts < 3) {
-        cout << "Please enter your email: ";
-        cin >> email_input;
-        cout << "Please enter your password: ";
-        cin >> pass_input;
-
-        if (email_input == user.email && pass_input == user.password) {
-            cout << "🔓 Login successful!\n";
-            return true;
-        }
-
-        cout << "❌ Incorrect credentials. Try again.\n";
-        attempts++;
-    }
-
-    cout << "⏳ Too many failed attempts. Please wait 30 seconds.\n";
-    this_thread::sleep_for(chrono::seconds(30));
-    return false;
-}
-
+*/
 int main()
 {
     User user;
@@ -172,7 +182,7 @@ int main()
     cout << "Welcome RDJ program" << endl;
     while(logged_in == false && quit_p == true)
     {
-        cout << "İf you dont have account please enter 'C' to create account or you have account please enter 'L' to login : " << endl;
+        cout << "IF you dont have account please enter 'C' to create account or you have account please enter 'L' to login : " << endl;
         cin >> choice;
         if(choice == 'c' || choice == 'C') 
             create_account(user);
@@ -185,20 +195,20 @@ int main()
         while(logged_in == true && quit_p == false)
         {
             cout << "Welcome" << " " << user.first_name << " " << user.last_name << " " << user.user_name << endl;
-            cout << "F : Change personel information" << endl;
-            cout << "S : Show the personal information" << endl;
+            //cout << "F : Change personel information" << endl;
+            //cout << "S : Show the personal information" << endl;
             cout << "T : Create text file" << endl;
             cout << "W : Write your text file" << endl;
             cout << "R : Read your text file" << endl;
-            cout << "D : Delete your personal information" << endl;
+            //cout << "D : Delete your personal information" << endl;
             cout << "Q : Quit the program" << endl;
             char action;
             cin >> action;
-            if(action == 'F' || action == 'f')
+            /*if(action == 'F' || action == 'f')
                 change_personal_information(user);
             else if(action == 'S' || action == 's')
                 show_information(user);
-            else if(action == 'T' || action == 't')
+            */if(action == 'T' || action == 't')
             {
                 ofstream myFile("user_data.txt");
                 cout << "Your text file creating...";
@@ -241,8 +251,8 @@ int main()
                 cout << "File reading completed." << endl;
                 f.close();
             }
-            else if(action == 'D' || action == 'd')
-                delete_information(user, logged_in);
+            //else if(action == 'D' || action == 'd')
+                //delete_information(user, logged_in);
             else if(action == 'Q' || action == 'q')
             {
                 cout << "Thank you for using our program goodbye" << endl;

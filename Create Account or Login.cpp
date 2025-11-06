@@ -69,6 +69,14 @@ bool login(const User& user) {
     return false;
 }
 
+bool check_password(const string &passw)
+{
+    if(password_file == passw)
+        return true;
+    return false;
+};
+
+
 void create_account(User &user)
 {
     cout << "Please write your first name : ";
@@ -93,61 +101,68 @@ void create_account(User &user)
     cout << "Your account has been created successfully" << endl;
 }
 
-/*void change_personal_information(User &user)
+void save_old_information(vector<string>& first, vector<string>& last, vector<string>& user, vector<string>& mail, vector<string>& password)
 {
-    string new_first_name, new_last_name, new_user_name, new_password, old_password;
-    cout << "Please enter your new first_name : ";
-    cin >> new_first_name;
-    user.first_name = new_first_name;
-    cout << "Please enter your new last name : ";
-    cin >> new_last_name;
-    user.last_name = new_last_name;
-    cout << "Please enter new username : ";
-    cin >> new_user_name;
-    user.user_name = new_user_name;
-    cout << "Please old password : ";
-    cin >> old_password;
-    while(old_password != user.password)
-    {
-        cout << "Your old password is incorrect. Please try again : ";
-        cin >> old_password;
+    ifstream file("users.txt");
+    if(!file.is_open())
+        cerr << "Error : Txt file not found." << endl;
+    else{
+        while(file >> name_file >> lastname_file >> username_file >> mail_file >> password_file)
+            {
+                first.push_back(name_file);
+                last.push_back(lastname_file);
+                user.push_back(username_file);
+                mail.push_back(mail_file);
+                password.push_back(password_file);
+            }
     }
-    
-    do{
-        cout << "Please enter your new password : ";
-        cin >> new_password;
-    }while(!is_valid_password(new_password));
-    cout << "Your personal information has been changed successfully" << endl;
-    user.password = new_password;
+    file.close();
 }
 
-void show_information(User &user)
+void change_information(string &filename, bool& logged_in)
 {
-    cout << "Your first name and last name : " << user.first_name << " " << user.last_name << endl;
-    cout << "Your username : " << user.user_name << endl;
-    cout << "Your email : " << user.email << endl;
-    string s;
-    cout << "İf you see password enter your password : ";
-    cin >> s;
-    int check = 0;
-    while(user.password != s)
+    bool cexit = false;
+    while(!cexit)
     {
-        cout << "Your password is wrong please try again : ";
-        cin >> s;
-        check += 1;
-        if(check >= 3)
-        {
-            cout << "You wrong password writed 3 and most 3 attemps please wait 60 seconds...";
-            this_thread::sleep_for(chrono::seconds(60));
-            check = 0;
-            cout << "Please try again : ";
-            cin >> s;
+        cout << "P : Change password : " << endl;
+        cout << "U : Change username : " << endl;
+        cout << "L : Change last name : " << endl;
+        cout << "E : Exit the page : " << endl;
+
+        char cact;
+        cin >> cact;
+
+        if(cact == 'P' || cact == 'p')
+        {   string passw, passw2;
+            do{ 
+                cout << "Please enter old password : " << endl;
+                cin >> passw;
+            }while(!check_password(passw));
+            int idx = 0;
+            vector<string> first, last, username, mail, password;
+            save_old_information(first, last, username, mail, password);
+            
+            do
+            {
+                cout << "Please enter new password : " << endl;
+                cin >> passw2;
+            } while (!is_valid_password(passw2));
+            
+            ofstream file("users.txt");
+            for(int i = 0; i < username.size(); i++)
+            {
+                file << first[i] << " " << last[i] << " " << username[i] << " " << mail[i] << " ";
+                if(password[i] == passw)
+                    file << passw2 << endl;
+                else
+                    file << password[i];
+            }
+            file.close();
+            logged_in = false;
+            cexit = true;
         }
     }
-    cout << "Your password : " << user.password << endl;
-    this_thread::sleep_for(chrono::seconds(3));
 }
-*/
 
 int main()
 {
@@ -156,7 +171,7 @@ int main()
     bool logged_in = false;
     bool quit_p = true;
     cout << "Welcome RDJ program" << endl;
-    while(logged_in == false && quit_p == true)
+    while(quit_p == true)
     {
         cout << "IF you dont have account please enter 'C' to create account or you have account please enter 'L' to login : " << endl;
         cin >> choice;
@@ -166,27 +181,20 @@ int main()
             logged_in = login(user);
         if(logged_in == false)
             cout << "Login failed. Please try again." << endl;
-        if(logged_in == true)
-            quit_p = false;
-        while(logged_in == true && quit_p == false)
+        while(logged_in == true)
         {
             string filename = (username_file + "_data") + ".txt";
             cout << "Welcome" << " " << user.first_name << " " << user.last_name << " " << user.user_name << endl;
-            //cout << "F : Change personel information" << endl;
-            //cout << "S : Show the personal information" << endl;
             cout << "T : Create text file" << endl;
             cout << "W : Write your text file" << endl;
             cout << "R : Read your text file" << endl;
+            cout << "C : Change the personal information : " << endl;
             cout << "Q : Quit the program" << endl;
 
             char action;
             cin >> action;
-            
-            /*if(action == 'F' || action == 'f')
-                change_personal_information(user);
-            else if(action == 'S' || action == 's')
-                show_information(user);
-            */if(action == 'T' || action == 't')
+
+            if(action == 'T' || action == 't')
             {
                 ofstream myFile(filename);
                 cout << "Your text file created." << endl;
@@ -220,10 +228,11 @@ int main()
                 cout << "File reading completed." << endl;
                 f.close();
             }
+            else if(action == 'C' || action == 'c')
+                change_information(filename, logged_in);
             else if(action == 'Q' || action == 'q')
             {
                 cout << "Thank you for using our program goodbye" << endl;
-                quit_p = true;
                 logged_in = false;
                 cout << endl;
             }
@@ -232,4 +241,3 @@ int main()
             }
         }
     }
-}

@@ -119,18 +119,19 @@ void save_old_information(vector<string>& first, vector<string>& last, vector<st
     file.close();
 }
 
-void change_information(string &filename, bool& logged_in)
+void change_information(string &filename, bool& logged_in, User& user)
 {
     bool cexit = false;
     while(!cexit)
     {
         cout << "P : Change password : " << endl;
         cout << "U : Change username : " << endl;
-        cout << "L : Change last name : " << endl;
         cout << "E : Exit the page : " << endl;
 
         char cact;
         cin >> cact;
+
+        vector<string> first, last, username, mail, password;
 
         if(cact == 'P' || cact == 'p')
         {   string passw, passw2;
@@ -139,7 +140,7 @@ void change_information(string &filename, bool& logged_in)
                 cin >> passw;
             }while(!check_password(passw));
             int idx = 0;
-            vector<string> first, last, username, mail, password;
+            
             save_old_information(first, last, username, mail, password);
             
             do
@@ -161,6 +162,25 @@ void change_information(string &filename, bool& logged_in)
             logged_in = false;
             cexit = true;
         }
+        else if(cact == 'U' || cact == 'u')
+        {
+            save_old_information(first, last, username, mail, password);
+            cout << "Please enter new username : " << endl;
+            cin >> user.user_name;
+            ofstream file("users.txt");
+            string old_username = username_file;
+            for(int i = 0; i < mail.size(); i++)
+            {
+                file << first[i] << " " << last[i] << " ";
+                if(old_username == username[i])
+                    file << user.user_name << " " << mail[i] << " " << password[i] << endl;
+                else
+                    file << username[i] << " " << mail[i] << " " << password[i] << endl;
+            }
+            cout << "Changed the username." << endl;
+        }
+        else if(cact == 'E' || cact == 'e')
+            cexit = true;
     }
 }
 
@@ -229,7 +249,7 @@ int main()
                 f.close();
             }
             else if(action == 'C' || action == 'c')
-                change_information(filename, logged_in);
+                change_information(filename, logged_in, user);
             else if(action == 'Q' || action == 'q')
             {
                 cout << "Thank you for using our program goodbye" << endl;
@@ -241,3 +261,4 @@ int main()
             }
         }
     }
+}

@@ -39,8 +39,8 @@ void MyFrame::CreateControl()
     panel = new wxPanel(this);
     panel->SetFont(mainFont);
 
-    BSingUp = new wxButton(panel, SingUp_ID, "SingUp", wxPoint(325,200));
-    BLogin = new wxButton(panel, Login_ID, "Login", wxPoint(325,240));
+    BSingUp = new wxButton(panel, SingUp_ID, "SingUp", wxPoint(325,240));
+    BLogin = new wxButton(panel, Login_ID, "Login", wxPoint(325,200));
 
     BSingUp->SetMinSize(wxSize(100, 35));
     BLogin->SetMinSize(wxSize(100, 35));
@@ -84,12 +84,12 @@ void MyFrame::CheckAccount(wxCommandEvent& evt)
             mailtext2->Show(false);
             PasswordText->Show(false);
             passwordtext2->Show(false);
-            rexit->Show(false);
+            rexit->Show(true);
 
-            wxStaticText* tc = new wxStaticText(panel, wxID_ANY, "Sing-up succesfuly.", wxPoint(275, 200));
+            tc = new wxStaticText(panel, wxID_ANY, "Sing-up succesfuly.", wxPoint(275, 200));
         }
         else {
-            wxStaticText* fc = new wxStaticText(panel, wxID_ANY, "Your information is wrong please try again.", wxPoint(325, 200));
+            fc = new wxStaticText(panel, wxID_ANY, "Your information is wrong please try again.", wxPoint(325, 200));
         }
     }
 }
@@ -103,6 +103,8 @@ void MyFrame::OnReturn(wxCommandEvent& evt)
     if (Singin) { Singin->Destroy(); Singin = nullptr; }
     if (rexit) { rexit->Destroy(); rexit = nullptr; }
     if (error) { error->Destroy(); error = nullptr; }
+    if (tc) { tc->Destroy(); tc = nullptr; }
+    if (fc) { fc->Destroy(); fc = nullptr; }
 
     if (BSingUp) BSingUp->Show(true);
     if (BLogin) BLogin->Show(true);

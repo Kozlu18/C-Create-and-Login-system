@@ -47,7 +47,7 @@ void MyFrame::CreateControl()
 
 }
 
-void MyFrame::SingUp(wxCommandEvent& evt) {
+void MyFrame::Login(wxCommandEvent& evt) {
     BSingUp->Show(false);
     BLogin->Show(false);
 
@@ -61,7 +61,7 @@ void MyFrame::SingUp(wxCommandEvent& evt) {
     rexit = new wxButton(panel, Returnext_ID, "Return", wxPoint(150, 340));
 }
 
-void MyFrame::Login(wxCommandEvent& evt)
+void MyFrame::SingUp(wxCommandEvent& evt)
 {
 
 }
